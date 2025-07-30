@@ -6,10 +6,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fileInput = document.getElementById('fileInput');
     const uploadForm = document.getElementById('uploadForm');
-    const dropZone = document.body; // Menggunakan seluruh body sebagai drop zone
+    const dropZone = document.body;
 
-    // Memicu klik pada input file
+    // Fungsi trigger yang sudah dimodifikasi
     window.triggerFileUpload = () => {
+        // Ganti URL di bawah ini dengan Direct Link Anda dari Adsterra
+        const adsterraDirectLink = 'https://GANTI_DENGAN_URL_DIRECT_LINK_ANDA.com';
+
+        // Buka Direct Link di tab baru
+        window.open(adsterraDirectLink, '_blank');
+        
+        // Jalankan fungsi upload file seperti biasa di halaman ini
         fileInput.click();
     };
     
@@ -19,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Event listener untuk drag and drop
     dropZone.addEventListener('dragover', (e) => {
         e.preventDefault();
         document.body.classList.add('dragging');
@@ -33,19 +39,17 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         document.body.classList.remove('dragging');
         if (e.dataTransfer.files.length > 0) {
-            fileInput.files = e.dataTransfer.files; // Menetapkan file ke input
+            fileInput.files = e.dataTransfer.files;
             handleFileUpload(e.dataTransfer.files[0]);
         }
     });
 
-    // Fungsi untuk menangani file yang dipilih
     function handleFileUpload(file) {
         const errorDiv = document.querySelector('.upload-error');
         const boxUpload = document.querySelector('.box-upload');
         errorDiv.style.display = 'none';
         errorDiv.textContent = '';
 
-        // 1. Validasi Tipe File
         const allowedTypes = ['video/mp4', 'video/quicktime'];
         if (!allowedTypes.includes(file.type)) {
             showModal('errorModal');
@@ -53,8 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // 2. Validasi Ukuran File (100MB)
-        const maxFileSize = 100 * 1024 * 1024; // 100MB dalam bytes
+        const maxFileSize = 100 * 1024 * 1024;
         if (file.size > maxFileSize) {
             errorDiv.textContent = "Error: Ukuran file terlalu besar. Harap unggah file di bawah 100MB.";
             errorDiv.style.display = 'block';
@@ -62,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Mulai proses upload (simulasi)
         uploadFile(file);
     }
 
@@ -71,12 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         boxUpload.classList.add('animate');
         boxUpload.innerHTML = 'Mengunggah...';
 
-        // Ini adalah bagian di mana Anda akan menggunakan AJAX (misalnya Fetch API)
-        // untuk mengirim file ke server backend Anda.
-        
-        // Contoh menggunakan FormData dan Fetch API
         const formData = new FormData(uploadForm);
-        // Jika form tidak memiliki file, tambahkan secara manual
         if (!formData.has('videoFile')) {
             formData.append('videoFile', file);
         }
@@ -84,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', uploadForm.action, true);
 
-        // Event listener untuk progress upload
         xhr.upload.addEventListener('progress', function(e) {
             if (e.lengthComputable) {
                 const percentComplete = Math.round((e.loaded / e.total) * 100);
@@ -95,17 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Event listener untuk saat upload selesai
         xhr.onload = function() {
             if (xhr.status === 200) {
-                // Berhasil: arahkan ke halaman video atau tampilkan link
-                // Server Anda harus mengembalikan JSON dengan link video
                 const response = JSON.parse(xhr.responseText);
-                // Contoh: window.location.href = response.link;
                 alert('Upload berhasil! Link video: ' + (response.link || 'tidak ada'));
                 boxUpload.innerHTML = 'Upload Selesai!';
             } else {
-                // Gagal: tampilkan pesan error dari server
                 const errorDiv = document.querySelector('.upload-error');
                 errorDiv.textContent = `Error: Upload gagal. (Status: ${xhr.status})`;
                 errorDiv.style.display = 'block';
@@ -113,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        // Event listener untuk error koneksi
         xhr.onerror = function() {
             const errorDiv = document.querySelector('.upload-error');
             errorDiv.textContent = 'Error: Terjadi masalah koneksi.';
@@ -131,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
         uploadForm.reset();
     }
 
-    // Fungsi Modal
     window.showModal = (modalId) => {
         document.getElementById(modalId).style.display = 'flex';
     }
